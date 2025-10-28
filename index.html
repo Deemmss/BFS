@@ -95,6 +95,24 @@
 
     /* ====== Responsive ====== */
     @media (max-width:1000px){.hero{grid-template-columns:1fr}.grid-3, .pricing, .split{grid-template-columns:1fr}}
+    
+    /* ===== INVEST: full-bleed + lightbox ===== */
+    .fullbleed{width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw}
+    .invest-gallery{display:grid;grid-template-columns:1fr;gap:24px;margin-top:28px}
+    .invest-figure{margin:0}
+    .invest-figure img{width:100%;max-height:80vh;object-fit:contain;border-radius:18px;border:1px solid var(--line);cursor:zoom-in}
+    .invest-caption{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:6px 4px 0;color:var(--muted);font-size:14px}
+    .invest-caption a{color:var(--g3);text-decoration:underline}
+
+    /* Lightbox */
+    .lb-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999}
+    .lb-content{max-width:95vw;max-height:92vh;position:relative}
+    .lb-content img{width:auto;max-width:95vw;max-height:92vh;object-fit:contain;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.55)}
+    .lb-close{position:absolute;top:-44px;right:0;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.12);border:1px solid var(--line);cursor:pointer}
+    @media (min-width:1100px){
+    .invest-gallery{grid-template-columns:1fr 1fr}
+}
+
   </style>
 </head>
 <body>
@@ -180,32 +198,48 @@
     </section>
 
     <!-- ===== Simulation D'investissement ===== -->
-<section id="invest" class="container section">
-  <h2>Simulation d’investissement</h2>
-  <p class="lead">
-    Analyse du rendement cumulé et du profit annuel basé sur les performances de l’algorithme
-    <b>Warren V8 – ETHUSD</b>.
-  </p>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px;align-items:center;">
-    <div class="card" style="padding:0;background:transparent;border:none;box-shadow:none;">
-      <h3 style="margin:0 0 10px 6px;">Profit Cumulé</h3>
-      <img src="tableur.jpg?v=3" alt="Graphique profit cumulé"
-           style="width:100%;border-radius:18px;box-shadow:0 0 35px rgba(0,0,0,.4);transform:scale(1.05);">
-    </div>
-
-    <div class="card" style="padding:0;background:transparent;border:none;box-shadow:none;">
-      <h3 style="margin:0 0 10px 6px;">Profit Annuel</h3>
-      <img src="tableur_colonne.jpg?v=3" alt="Graphique profit annuel"
-           style="width:100%;border-radius:18px;box-shadow:0 0 35px rgba(0,0,0,.4);transform:scale(1.05);">
-    </div>
+<section id="invest" class="section">
+  <div class="container">
+    <h2>Simulation d’investissement</h2>
+    <p class="lead">Analyse du rendement cumulé et du profit annuel basé sur les performances de l’algorithme <b>Warren V8 – ETHUSD</b>.</p>
   </div>
 
-  <p style="color:var(--muted);margin-top:28px;text-align:center;">
-    Les données proviennent d’une simulation réalisée entre 2022 et 2025.
-    L’évolution montre une croissance cumulée de plus de <b>+400 000 $</b> et un rendement annuel en nette progression.
-  </p>
+  <!-- zone full-bleed pour des images très larges -->
+  <div class="fullbleed">
+    <div class="container" style="max-width:1400px">
+      <div class="invest-gallery">
+        <figure class="invest-figure">
+          <img src="tableur.jpg?v=4" alt="Graphique profit cumulé" data-lb="tableur.jpg">
+          <figcaption class="invest-caption">
+            <b>Profit Cumulé</b>
+            <a href="tableur.jpg" target="_blank" rel="noopener">Ouvrir l’image originale</a>
+          </figcaption>
+        </figure>
+
+        <figure class="invest-figure">
+          <img src="tableur_colonne.jpg?v=4" alt="Graphique profit annuel" data-lb="tableur_colonne.jpg">
+          <figcaption class="invest-caption">
+            <b>Profit Annuel</b>
+            <a href="tableur_colonne.jpg" target="_blank" rel="noopener">Ouvrir l’image originale</a>
+          </figcaption>
+        </figure>
+      </div>
+
+      <p style="color:var(--muted);margin-top:18px;text-align:center">
+        Les données couvrent 2022–2025. Cliquez sur un graphique pour l’agrandir en plein écran.
+      </p>
+    </div>
+  </div>
 </section>
+
+<!-- Lightbox -->
+<div class="lb-backdrop" id="lb">
+  <div class="lb-content">
+    <button class="lb-close" id="lb-close">Fermer ✕</button>
+    <img id="lb-img" alt="">
+  </div>
+</div>
+
 
     <!-- ===== FAQ ===== -->
     <section id="faq" class="container section">
@@ -253,6 +287,28 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
   </script>
+  <script>
+  // Lightbox très simple
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  const lbClose = document.getElementById('lb-close');
+
+  document.addEventListener('click', (e)=>{
+    const img = e.target.closest('img[data-lb]');
+    if(img){
+      lbImg.src = img.getAttribute('data-lb') + '?full=' + Date.now();
+      lb.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    if(e.target === lb || e.target === lbClose){ // fermer
+      lb.style.display = 'none';
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    }
+  });
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && lb.style.display==='flex'){ lb.style.display='none'; lbImg.src=''; document.body.style.overflow=''; }});
+</script>
+
 </body>
 </html>
 
