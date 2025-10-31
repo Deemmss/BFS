@@ -144,15 +144,12 @@
     /* ===== HERO SECTION BFS ===== */
 .hero-bfs {
   position: relative;
-  height: 100vh;
-  background: url('warren1.png') no-repeat center center/cover;
+  height: 60vh; /* réduit la hauteur à 60% de la fenêtre */
+  background: url("warren.png") center top/contain no-repeat; /* "contain" pour que toute l’image soit visible */
+  background-color: #0b0e1a; /* couleur de fond pour remplir le reste */
   display: flex;
-  align-items: center;
   justify-content: center;
-  text-align: center;
-  color: white;
-  overflow: hidden;
-  animation: slowZoom 30s ease-in-out infinite alternate;
+  align-items: center;
 }
 
 .hero-overlay {
@@ -366,6 +363,7 @@
 
 </body>
 </html>
+
 
 
 
